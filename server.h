@@ -1,3 +1,6 @@
+#ifndef SERVER_H
+#define SERVER_H
+
 /* System Header Files */
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +31,8 @@
 #define DEFAULT_ROOM "Lobby"
 #define MAXBUFF   2096
 #define BACKLOG 2 
-
+#define DEFAULT_ROOM "Lobby"
+#define LOBBY_ROOM_ID 0
 
 // prototypes
 
@@ -37,3 +41,5 @@ int start_server(int serv_socket, int backlog);
 int accept_client(int serv_sock);
 void sigintHandler(int sig_num);
 void *client_receive(void *ptr);
+
+#endif

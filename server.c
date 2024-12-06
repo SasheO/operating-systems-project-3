@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
    //  
    //    TODO
    //////////////////////////////////////////////////////
+   struct room * lobby = create_room(LOBBY_ROOM_ID, DEFAULT_ROOM);
 
    // Open server socket
    chat_serv_sock_fd = get_server_socket();

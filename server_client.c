@@ -1,8 +1,5 @@
 #include "server.h"
 
-#define DEFAULT_ROOM "Lobby"
-#define LOBBY_ROOM_ID 0
-
 // USE THESE LOCKS AND COUNTER TO SYNCHRONIZE
 extern int numReaders;
 extern pthread_mutex_t rw_lock;
@@ -11,8 +8,11 @@ extern pthread_mutex_t mutex;
 extern struct node *head;
 
 extern char *server_MOTD;
+int next_room_ID = 1;
 
+struct room *ROOMS[6];
 
+int get_next_room_ID();
 /*
  *Main thread for each client.  Receives all messages
  *and passes the data off to the correct function.  Receives
@@ -202,4 +202,9 @@ void *client_receive(void *ptr) {
       }
    }
    return NULL;
+}
+
+int get_next_room_ID(){
+  next_room_ID++;
+  return next_room_ID-1;
 }
