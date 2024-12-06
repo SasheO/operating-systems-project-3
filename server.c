@@ -27,10 +27,8 @@ int main(int argc, char **argv) {
    //  
    //    
    //////////////////////////////////////////////////////
-   // TODO: create a simple thread that passes lobby to server client and adds it to rooms. test by printing out rooms lobby.
-   pthread_t create_lobby_thread;
-    pthread_create(&create_lobby_thread, NULL, create_lobby, NULL);
-  pthread_join(create_lobby_thread,NULL);
+   
+   create_default_room(); // create lobby room
 
    // Open server socket
    chat_serv_sock_fd = get_server_socket();

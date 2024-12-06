@@ -40,10 +40,8 @@ char *trimwhitespace(char *str)
   return str;
 }
 
-void *add_lobby_to_rooms(void *ptr){
-  ROOMS[0] = create_room(LOBBY_ROOM_ID, DEFAULT_ROOM);
-  printf("%s successfully added!\n", ROOMS[0]->roomname);
-  return NULL;
+void create_default_room(){
+  ROOMS[0] = create_room(DEFAULT_ROOM_ID, DEFAULT_ROOM);
 }
 
 void *client_receive(void *ptr) {
@@ -62,7 +60,7 @@ void *client_receive(void *ptr) {
    // Creating the guest user name
   
    sprintf(username,"guest%d", client);
-   head = insertFirstU(head, client , username, LOBBY_ROOM_ID);
+   head = insertFirstU(head, client , username, DEFAULT_ROOM_ID);
    
    // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
 
