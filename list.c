@@ -5,7 +5,7 @@
 #include "list.h"
 
 //insert link at the first location
-struct node* insertFirstU(struct node *head, int socket, char *username) {
+struct node* insertFirstU(struct node *head, int socket, char *username, int room) {
     
    if(findU(head,username) == NULL) {
            
@@ -14,6 +14,7 @@ struct node* insertFirstU(struct node *head, int socket, char *username) {
 
        link->socket = socket;
        strcpy(link->username,username);
+       link->room = room;
        
        //point it to old first node
        link->next = head;

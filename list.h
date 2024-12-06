@@ -7,6 +7,7 @@ struct node {
    char username[30];
    int socket;
    struct node *next;
+   int room;
 };
 
 
@@ -14,7 +15,7 @@ struct node {
 /////////////////// USERLIST //////////////////////////
 
 //insert node at the first location
-struct node* insertFirstU(struct node *head, int socket, char *username);
+struct node* insertFirstU(struct node *head, int socket, char *username, int room);
 
 //find a node with given username
 struct node* findU(struct node *head, char* username);

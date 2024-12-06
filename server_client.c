@@ -1,6 +1,7 @@
 #include "server.h"
 
 #define DEFAULT_ROOM "Lobby"
+#define LOBBY_ROOM_ID 0
 
 // USE THESE LOCKS AND COUNTER TO SYNCHRONIZE
 extern int numReaders;
@@ -55,7 +56,7 @@ void *client_receive(void *ptr) {
    // Creating the guest user name
   
    sprintf(username,"guest%d", client);
-   head = insertFirstU(head, client , username);
+   head = insertFirstU(head, client , username, LOBBY_ROOM_ID);
    
    // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
 
@@ -159,21 +160,21 @@ void *client_receive(void *ptr) {
             else if (strcmp(arguments[0], "login") == 0)
             {
                 
-                //rename their guestID to username. Make sure any room or DMs have the updated username.
+                // TODO: rename their guestID to username. Make sure any room or DMs have the updated username.
                 
                 sprintf(buffer, "\nchat>");
                 send(client , buffer , strlen(buffer) , 0 ); // send back to client
             } 
             else if (strcmp(arguments[0], "help") == 0 )
             {
-                sprintf(buffer, "login <username> - \"login with username\" \ncreate <room> - \"create a room\" \njoin <room> - \"join a room\" \nleave <room> - \"leave a room\" \nusers - \"list all users\" \nrooms -  \"list all rooms\" \nconnect <user> - \"connect to user\" \nexit - \"exit chat\" \n");
+                sprintf(buffer, "login <username> - \"login with username\" \ncreate <room> - \"create a room\" \njoin <room> - \"join a room\" \nleave <room> - \"leave a room\" \nusers - \"list all users\" \nrooms -  \"list all rooms\" \nconnect <user> - \"connect to user\" \nexit - \"exit chat\" \n\nchat>");
                 send(client , buffer , strlen(buffer) , 0 ); // send back to client 
             }
             else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0)
             {
     
-                //Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
-                close(client);
+                //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
+                close(client); // close socket descriptor
             }                         
             else { 
                  /////////////////////////////////////////////////////////////
