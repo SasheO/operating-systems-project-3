@@ -17,6 +17,7 @@
 
 /* Local Header Files */
 #include "list.h"
+#include "room.h"
 
 #define MAX_READERS 25
 #define TRUE   1  

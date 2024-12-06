@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -10,7 +13,7 @@ struct node {
    int room;
 };
 
-
+ 
 
 /////////////////// USERLIST //////////////////////////
 
@@ -19,3 +22,4 @@ struct node* insertFirstU(struct node *head, int socket, char *username, int roo
 
 //find a node with given username
 struct node* findU(struct node *head, char* username);
+#endif
