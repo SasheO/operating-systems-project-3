@@ -10,7 +10,7 @@ extern struct node *head;
 extern char *server_MOTD;
 int next_room_ID = 1;
 
-struct room *ROOMS[6];
+struct room * ROOMS[MAX_NUM_ROOMS];
 
 int get_next_room_ID();
 /*
@@ -38,6 +38,12 @@ char *trimwhitespace(char *str)
   end[1] = '\0';
 
   return str;
+}
+
+void *add_lobby_to_rooms(void *ptr){
+  ROOMS[0] = create_room(LOBBY_ROOM_ID, DEFAULT_ROOM);
+  printf("%s successfully added!\n", ROOMS[0]->roomname);
+  return NULL;
 }
 
 void *client_receive(void *ptr) {

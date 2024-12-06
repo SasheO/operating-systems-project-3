@@ -33,6 +33,7 @@
 #define BACKLOG 2 
 #define DEFAULT_ROOM "Lobby"
 #define LOBBY_ROOM_ID 0
+#define MAX_NUM_ROOMS 6
 
 // prototypes
 
@@ -41,5 +42,6 @@ int start_server(int serv_socket, int backlog);
 int accept_client(int serv_sock);
 void sigintHandler(int sig_num);
 void *client_receive(void *ptr);
+void *create_lobby(void *ptr);
 
 #endif

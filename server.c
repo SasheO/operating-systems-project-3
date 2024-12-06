@@ -25,9 +25,12 @@ int main(int argc, char **argv) {
    // create the default room for all clients to join when 
    // initially connecting
    //  
-   //    TODO
+   //    
    //////////////////////////////////////////////////////
-   struct room * lobby = create_room(LOBBY_ROOM_ID, DEFAULT_ROOM);
+   // TODO: create a simple thread that passes lobby to server client and adds it to rooms. test by printing out rooms lobby.
+   pthread_t create_lobby_thread;
+    pthread_create(&create_lobby_thread, NULL, create_lobby, NULL);
+  pthread_join(create_lobby_thread,NULL);
 
    // Open server socket
    chat_serv_sock_fd = get_server_socket();
