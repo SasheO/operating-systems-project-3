@@ -18,8 +18,8 @@ void name_room(struct room * myroom, char roomname[30]){
 }
 
 void add_user_to_room(struct node* user, struct room * myroom){
-  myroom->users = insertU(myroom->users, user);
-}
+  myroom->users = createAndInsertU(myroom->users, user->socket, user->username);
+} 
 
 struct node * remove_user_from_room(struct room * myroom, char username[30]){
   //  returns null if user not there or error
