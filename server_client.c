@@ -53,7 +53,9 @@ void *client_receive(void *ptr) {
   char roomname[30];
   int roomID;
 
+
   struct node *current_user;
+  struct node *other_user; // for whenever we need to handle a user that is not self
 
   send(client  , server_MOTD , strlen(server_MOTD) , 0 ); // Send Welcome Message of the Day.
 
@@ -124,8 +126,38 @@ void *client_receive(void *ptr) {
 
       else if (strcmp(arguments[0], "join") == 0){
         printf("join room: %s\n", arguments[1]);  
-
-        // perform the operations to join room arg[1]
+        if (arguments[1]==NULL){
+          sprintf(buffer, "Give the name of the room you want to join.\nCommand 'rooms' gives a list of available rooms.\n");
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
+        else{
+          // perform the operations to join room arg[1]
+          strcpy(roomname, arguments[1]);
+          int indx = 0;
+          while (indx<next_room_ID){ // find the room with the given name. if room does not exist, while loop will run until indx==next_room_ID
+            if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+              break;
+            }
+            indx ++;
+          }
+          if (indx >= next_room_ID){ // room does not exist
+            sprintf(buffer, "Room does not exist\n");
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+          }
+          else{ // remove user from current room and move them to intended room
+            other_user = remove_user_from_room(ROOMS[current_user->current_room_ID], current_user->username);
+            if (other_user==NULL){ // remove_user_from_room function returns null if tehre is some issue so give an error message
+              sprintf(buffer, "Issue removing you from your current room %s\n", ROOMS[current_user->current_room_ID]->roomname);
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            }
+            else{              
+              add_user_to_room(current_user, ROOMS[indx]);
+              sprintf(buffer, "You have been moved to room # %d: %s\n", current_user->current_room_ID, ROOMS[indx]->roomname);
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            }
+          }
+        }
+        
 
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
