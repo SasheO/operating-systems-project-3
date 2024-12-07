@@ -235,7 +235,7 @@ void *client_receive(void *ptr) {
       }                           
       else if (strcmp(arguments[0], "login") == 0) {
 
-        // TODO: change usernames in DMS
+        // TODO: change usernames in DMS 
         // TODO: acquire locks to modify rooms
         if (arguments[1]!=NULL){
           strcpy(username, arguments[1]);
