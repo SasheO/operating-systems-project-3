@@ -43,191 +43,181 @@ void create_default_room(){
 }
 
 void *client_receive(void *ptr) {
-   int client = *(int *) ptr;  // socket
-  
-   int received, i;
-   char buffer[MAXBUFF], sbuffer[MAXBUFF];  //data buffer of 2K  
-   char tmpbuf[MAXBUFF];  //data temp buffer of 1K  
-   char cmd[MAXBUFF], username[20];
-   char *arguments[80];
-   char roomname[30];
-   int roomID;
+  int client = *(int *) ptr;  // socket
 
-   struct node *current_user;
-    
-   send(client  , server_MOTD , strlen(server_MOTD) , 0 ); // Send Welcome Message of the Day.
+  int received, i;
+  char buffer[MAXBUFF], sbuffer[MAXBUFF];  //data buffer of 2K  
+  char tmpbuf[MAXBUFF];  //data temp buffer of 1K  
+  char cmd[MAXBUFF], username[20];
+  char *arguments[80];
+  char roomname[30];
+  int roomID;
 
-   // Creating the guest user name
-  
-   sprintf(username,"guest%d", client);
+  struct node *current_user;
 
-   // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
-   current_user = createAndInsertU(NULL, client , username, DEFAULT_ROOM_ID);
-   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
+  send(client  , server_MOTD , strlen(server_MOTD) , 0 ); // Send Welcome Message of the Day.
 
-   while (1) {
-       
-      if ((received = read(client , buffer, MAXBUFF)) != 0) {
+  // Creating the guest user name
+
+  sprintf(username,"guest%d", client);
+
+  // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
+  current_user = createAndInsertU(NULL, client , username, DEFAULT_ROOM_ID);
+  add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
+
+  while (1) {
       
-            buffer[received] = '\0'; 
-            strcpy(cmd, buffer);  
-            strcpy(sbuffer, buffer);
-         
-            /////////////////////////////////////////////////////
-            // we got some data from a client
+    if ((received = read(client , buffer, MAXBUFF)) != 0) {
 
-            // 1. Tokenize the input in buf (split it on whitespace)
+      buffer[received] = '\0'; 
+      strcpy(cmd, buffer);  
+      strcpy(sbuffer, buffer);
 
-            // get the first token 
+      /////////////////////////////////////////////////////
+      // we got some data from a client
 
-             arguments[0] = strtok(cmd, delimiters);
+      // 1. Tokenize the input in buf (split it on whitespace)
 
-            // walk through other tokens 
+      // get the first token 
 
-             i = 0;
-             while( arguments[i] != NULL ) {
-                arguments[++i] = strtok(NULL, delimiters); 
-                strcpy(arguments[i-1], trimwhitespace(arguments[i-1]));
-             } 
-  
+      arguments[0] = strtok(cmd, delimiters);
 
-             // Arg[0] = command
-             // Arg[1] = user or room
-             
-             /////////////////////////////////////////////////////
-             // 2. Execute command: TODO
+      // walk through other tokens 
+
+      i = 0;
+      while( arguments[i] != NULL ) {
+        arguments[++i] = strtok(NULL, delimiters); 
+        strcpy(arguments[i-1], trimwhitespace(arguments[i-1]));
+      } 
 
 
-            if(strcmp(arguments[0], "create") == 0)
-            {
-               printf("create room: %s\n", arguments[1]); 
-              
-               // perform the operations to create room arg[1]
-              roomID = get_next_room_ID();
-              if(roomID>=MAX_NUM_ROOMS){
-                // too many rooms already
-                sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
-                send(client , buffer , strlen(buffer) , 0 ); // send back to client
-              }
-              else{
-                // create room with name given or newroom+socketnumber if user did not name room
-                if (arguments[1]!=NULL){
-                  strcpy(roomname, arguments[1]);
-                }
-                else{
-                  sprintf(roomname,"newroom%d", client);
-                }
-                ROOMS[roomID] = create_room(roomID, roomname);
-              }
-              
-               sprintf(buffer, "\nchat>");
-               send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
-            else if (strcmp(arguments[0], "join") == 0)
-            {
-               printf("join room: %s\n", arguments[1]);  
+      // Arg[0] = command
+      // Arg[1] = user or room
 
-               // perform the operations to join room arg[1]
-              
-               sprintf(buffer, "\nchat>");
-               send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
-            else if (strcmp(arguments[0], "leave") == 0)
-            {
-               printf("leave room: %s\n", arguments[1]); 
+      /////////////////////////////////////////////////////
+      // 2. Execute command: TODO
 
-               // perform the operations to leave room arg[1]
 
-               sprintf(buffer, "\nchat>");
-               send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            } 
-            else if (strcmp(arguments[0], "connect") == 0)
-            {
-               printf("connect to user: %s \n", arguments[1]);
+      if(strcmp(arguments[0], "create") == 0){
+        printf("create room: %s\n", arguments[1]); 
+        // perform the operations to create room arg[1]
+        roomID = get_next_room_ID();
+        if(roomID>=MAX_NUM_ROOMS){
+        // too many rooms already
+          sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
+        else{
+          // create room with name given or newroom+socketnumber if user did not name room
+          if (arguments[1]!=NULL){
+            strcpy(roomname, arguments[1]);
+          }
+          else{
+            sprintf(roomname,"newroom%d", client);
+          }
+          ROOMS[roomID] = create_room(roomID, roomname);
+        }
 
-               // perform the operations to connect user with socket = client from arg[1]
-
-               sprintf(buffer, "\nchat>");
-               send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
-            else if (strcmp(arguments[0], "disconnect") == 0)
-            {             
-               printf("disconnect from user: %s\n", arguments[1]);
-               
-               // perform the operations to disconnect user with socket = client from arg[1]
-                
-               sprintf(buffer, "\nchat>");
-               send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }                  
-            else if (strcmp(arguments[0], "rooms") == 0)
-            {
-                printf("List all the rooms\n");
-              
-                // must add put list of rooms into buffer to send to client
-                int indx = 0;
-                while(indx<next_room_ID){
-                  strcat(buffer, ROOMS[indx]->roomname);
-                  strcat(buffer, "\n");
-                  indx ++;
-                }
-                
-                strcat(buffer, "\nchat>");
-                send(client , buffer , strlen(buffer) , 0 ); // send back to client                            
-            }   
-            else if (strcmp(arguments[0], "users") == 0)
-            {
-                printf("List all the users\n");
-              
-                // must add put list of users into buffer to send to client
-                
-                strcat(buffer, "\nchat>");
-                send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }                           
-            else if (strcmp(arguments[0], "login") == 0)
-            {
-                
-                // TODO: rename their guestID to username. Make sure any room or DMs have the updated username.
-                
-                sprintf(buffer, "\nchat>");
-                send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            } 
-            else if (strcmp(arguments[0], "help") == 0 )
-            {
-                sprintf(buffer, "login <username> - \"login with username\" \ncreate <room> - \"create a room\" \njoin <room> - \"join a room\" \nleave <room> - \"leave a room\" \nusers - \"list all users\" \nrooms -  \"list all rooms\" \nconnect <user> - \"connect to user\" \nexit - \"exit chat\" \n\nchat>");
-                send(client , buffer , strlen(buffer) , 0 ); // send back to client 
-            }
-            else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0)
-            {
-    
-                //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
-                close(client); // close socket descriptor
-            }                         
-            else { 
-                 /////////////////////////////////////////////////////////////
-                 // 3. sending a message
-           
-                 // send a message in the following format followed by the promt chat> to the appropriate receipients based on rooms, DMs
-                 // ::[userfrom]> <message>
-              
-                 sprintf(tmpbuf,"\n::%s> %s\nchat>", "PUTUSERFROM", sbuffer);
-                 strcpy(sbuffer, tmpbuf);
-                       
-                //  current_user = head;
-                //  while(current_user != NULL) {
-                     
-                //      if(client != current_user->socket){  // dont send to yourcurrent_user 
-                       
-                //          send(current_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
-                //      }
-                //      current_user = current_user->next;
-                //  }
-          
-            }
- 
-         memset(buffer, 0, sizeof(1024));
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }
-   }
-   return NULL;
+
+      else if (strcmp(arguments[0], "join") == 0){
+        printf("join room: %s\n", arguments[1]);  
+
+        // perform the operations to join room arg[1]
+
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      }
+      else if (strcmp(arguments[0], "leave") == 0){
+        printf("leave room: %s\n", arguments[1]); 
+
+        // perform the operations to leave room arg[1]
+
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      } 
+      else if (strcmp(arguments[0], "connect") == 0){
+        printf("connect to user: %s \n", arguments[1]);
+
+        // perform the operations to connect user with socket = client from arg[1]
+
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      }
+      else if (strcmp(arguments[0], "disconnect") == 0){             
+        printf("disconnect from user: %s\n", arguments[1]);
+
+        // perform the operations to disconnect user with socket = client from arg[1]
+
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      }                  
+      else if (strcmp(arguments[0], "rooms") == 0) {
+        printf("List all the rooms\n");
+
+        // must add put list of rooms into buffer to send to client
+        int indx = 0;
+        while(indx<next_room_ID){
+          strcat(buffer, ROOMS[indx]->roomname);
+          strcat(buffer, "\n");
+          indx ++;
+        }
+
+        strcat(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client                            
+      }
+      else if (strcmp(arguments[0], "users") == 0) {
+        printf("List all the users\n");
+
+        // must add put list of users into buffer to send to client
+
+        strcat(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      }                           
+      else if (strcmp(arguments[0], "login") == 0) {
+
+        // TODO: rename their guestID to username. Make sure any room or DMs have the updated username.
+
+        sprintf(buffer, "\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client
+      } 
+      else if (strcmp(arguments[0], "help") == 0 ) {
+        sprintf(buffer, "login <username> - \"login with username\" \ncreate <room> - \"create a room\" \njoin <room> - \"join a room\" \nleave <room> - \"leave a room\" \nusers - \"list all users\" \nrooms -  \"list all rooms\" \nconnect <user> - \"connect to user\" \nexit - \"exit chat\" \n\nchat>");
+        send(client , buffer , strlen(buffer) , 0 ); // send back to client 
+      }
+      else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0) {
+
+        //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
+        close(client); // close socket descriptor
+      }                         
+      else { 
+        /////////////////////////////////////////////////////////////
+        // 3. sending a message
+
+        // send a message in the following format followed by the promt chat> to the appropriate receipients based on rooms, DMs
+        // ::[userfrom]> <message>
+
+        sprintf(tmpbuf,"\n::%s> %s\nchat>", "PUTUSERFROM", sbuffer);
+        strcpy(sbuffer, tmpbuf);
+
+        //  current_user = head;
+        //  while(current_user != NULL) {
+
+        //      if(client != current_user->socket){  // dont send to yourcurrent_user 
+
+        //          send(current_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
+        //      }
+        //      current_user = current_user->next;
+        //  }
+
+      }
+
+      memset(buffer, 0, sizeof(1024));
+    }
+  }
+  return NULL;
 }
 
 
