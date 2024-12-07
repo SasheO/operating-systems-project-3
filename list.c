@@ -4,7 +4,7 @@
 #include <string.h>
 #include "list.h"
 
-// create and insert link at the first location
+//insert node at the first location. setting head as NULL means this just creates and returns a new node
 struct node* createAndInsertU(struct node *head, int socket, char *username, int room) {
     
    if(findU(head,username) == NULL) {

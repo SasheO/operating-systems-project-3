@@ -5,8 +5,6 @@ extern int numReaders;
 extern pthread_mutex_t rw_lock;
 extern pthread_mutex_t mutex;
 
-extern struct node *head;
-
 extern char *server_MOTD;
 int next_room_ID = 1;
 
@@ -53,16 +51,17 @@ void *client_receive(void *ptr) {
    char cmd[MAXBUFF], username[20];
    char *arguments[80];
 
-   struct node *currentUser;
+   struct node *current_user;
     
    send(client  , server_MOTD , strlen(server_MOTD) , 0 ); // Send Welcome Message of the Day.
 
    // Creating the guest user name
   
    sprintf(username,"guest%d", client);
-   head = createAndInsertU(head, client , username, DEFAULT_ROOM_ID);
-   
+
    // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
+   current_user = createAndInsertU(NULL, client , username, DEFAULT_ROOM_ID);
+   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
 
    while (1) {
        
@@ -190,15 +189,15 @@ void *client_receive(void *ptr) {
                  sprintf(tmpbuf,"\n::%s> %s\nchat>", "PUTUSERFROM", sbuffer);
                  strcpy(sbuffer, tmpbuf);
                        
-                 currentUser = head;
-                 while(currentUser != NULL) {
+                //  current_user = head;
+                //  while(current_user != NULL) {
                      
-                     if(client != currentUser->socket){  // dont send to yourself 
+                //      if(client != current_user->socket){  // dont send to yourcurrent_user 
                        
-                         send(currentUser->socket , sbuffer , strlen(sbuffer) , 0 ); 
-                     }
-                     currentUser = currentUser->next;
-                 }
+                //          send(current_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
+                //      }
+                //      current_user = current_user->next;
+                //  }
           
             }
  
