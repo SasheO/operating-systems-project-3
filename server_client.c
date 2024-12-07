@@ -6,7 +6,7 @@ extern pthread_mutex_t rw_lock;
 extern pthread_mutex_t mutex;
 
 extern char *server_MOTD;
-int next_room_ID = 1;
+int next_room_ID = 1; // do not modify except in get_next_room_ID
 
 struct room * ROOMS[MAX_NUM_ROOMS];
 
@@ -50,6 +50,8 @@ void *client_receive(void *ptr) {
    char tmpbuf[MAXBUFF];  //data temp buffer of 1K  
    char cmd[MAXBUFF], username[20];
    char *arguments[80];
+   char roomname[30];
+   int roomID;
 
    struct node *current_user;
     
@@ -87,6 +89,7 @@ void *client_receive(void *ptr) {
                 arguments[++i] = strtok(NULL, delimiters); 
                 strcpy(arguments[i-1], trimwhitespace(arguments[i-1]));
              } 
+  
 
              // Arg[0] = command
              // Arg[1] = user or room
@@ -100,7 +103,22 @@ void *client_receive(void *ptr) {
                printf("create room: %s\n", arguments[1]); 
               
                // perform the operations to create room arg[1]
-              
+              roomID = get_next_room_ID();
+              if(roomID>=MAX_NUM_ROOMS){
+                // too many rooms already
+                sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
+                send(client , buffer , strlen(buffer) , 0 ); // send back to client
+              }
+              else{
+                // create room with name given or newroom+socketnumber if user did not name room
+                if (arguments[1]!=NULL){
+                  strcpy(roomname, arguments[1]);
+                }
+                else{
+                  sprintf(roomname,"newroom%d", client);
+                }
+                ROOMS[roomID] = create_room(roomID, roomname);
+              }
               
                sprintf(buffer, "\nchat>");
                send(client , buffer , strlen(buffer) , 0 ); // send back to client
@@ -145,9 +163,14 @@ void *client_receive(void *ptr) {
             {
                 printf("List all the rooms\n");
               
-                // must add put list of users into buffer to send to client
-       
-              
+                // must add put list of rooms into buffer to send to client
+                int indx = 0;
+                while(indx<next_room_ID){
+                  strcat(buffer, ROOMS[indx]->roomname);
+                  strcat(buffer, "\n");
+                  indx ++;
+                }
+                
                 strcat(buffer, "\nchat>");
                 send(client , buffer , strlen(buffer) , 0 ); // send back to client                            
             }   
@@ -207,7 +230,9 @@ void *client_receive(void *ptr) {
    return NULL;
 }
 
+
 int get_next_room_ID(){
+  // TODO: acquaire lock for next_room_ID
   next_room_ID++;
   return next_room_ID-1;
 }
