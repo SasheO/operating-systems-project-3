@@ -49,7 +49,7 @@ void *client_receive(void *ptr) {
   int received, i;
   char buffer[MAXBUFF], sbuffer[MAXBUFF];  //data buffer of 2K  
   char tmpbuf[MAXBUFF];  //data temp buffer of 1K  
-  char cmd[MAXBUFF], username[20];
+  char cmd[MAXBUFF], username[30];
   char *arguments[80];
   char roomname[30];
   int roomID;
@@ -107,21 +107,24 @@ void *client_receive(void *ptr) {
         // TODO: acquire locks for the ROOMS to create it
         printf("create room: %s\n", arguments[1]); 
         // perform the operations to create room arg[1]
-        roomID = get_next_room_ID();
-        if(roomID>=MAX_NUM_ROOMS){
-        // too many rooms already
-          sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
+        if(arguments[1]==NULL){
+          sprintf(buffer, "Failed creating room: Enter room name\n");
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
         else{
-          // create room with name given or newroom+socketnumber if user did not name room
-          if (arguments[1]!=NULL){
-            strcpy(roomname, arguments[1]);
+        // create room with name given or newroom+socketnumber if user did not name room
+          roomID = get_next_room_ID();
+          if(roomID>=MAX_NUM_ROOMS){
+          // too many rooms already
+            sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
           else{
-            sprintf(roomname,"newroom%d", client);
+            strcpy(roomname, arguments[1]);
+            ROOMS[roomID] = create_room(roomID, roomname);
+            sprintf(buffer, "Success creating room\n");
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
-          ROOMS[roomID] = create_room(roomID, roomname);
         }
 
         sprintf(buffer, "\nchat>");
@@ -141,19 +144,11 @@ void *client_receive(void *ptr) {
           int indx = 0;
           while (indx<next_room_ID){ // find the room with the given name. if room does not exist, while loop will run until indx==next_room_ID
             if (strcmp(ROOMS[indx]->roomname, roomname)==0){
-              break;
+              add_user_to_room(current_user, ROOMS[indx]);
+              sprintf(buffer, "You have been added to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
             }
             indx ++;
-          }
-          if (indx >= next_room_ID){ // room does not exist
-            sprintf(buffer, "Room does not exist\n");
-            send(client , buffer , strlen(buffer) , 0 ); // send back to client
-          }
-          else{ // remove user from current room and move them to intended room        
-            add_user_to_room(current_user, ROOMS[indx]);
-            sprintf(buffer, "You have been added to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
-            send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            
           }
         }
         
@@ -164,14 +159,21 @@ void *client_receive(void *ptr) {
       else if (strcmp(arguments[0], "leave") == 0){
         // TODO: acquire locks to leave room
         printf("leave room: %s\n", arguments[1]); 
-
-        // perform the operations to leave room arg[1]
-        /* other_user = remove_user_from_room( room id here, current_user->username);
-        if (other_user==NULL){ // remove_user_from_room function returns null if tehre is some issue so give an error message
-          sprintf(buffer, "Issue removing you from your current room %s\n", ROOMS[current_user->current_room_ID]->roomname);
+        if (arguments[1]==NULL){
+          sprintf(buffer, "Give the name of the room you want to leave.\nCommand 'rooms' gives a list of available rooms.\n");
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
-        */ 
+        else{
+          int indx = 0;
+          strcpy(roomname, arguments[1]);
+          while (indx<next_room_ID){
+            if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+              remove_user_from_room(ROOMS[indx], current_user->username);
+            }
+            indx ++;
+          }
+        }
+        
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 
@@ -233,8 +235,23 @@ void *client_receive(void *ptr) {
       }                           
       else if (strcmp(arguments[0], "login") == 0) {
 
-        // TODO: rename their guestID to username. Make sure any room or DMs have the updated username.
+        // TODO: change usernames in DMS
         // TODO: acquire locks to modify rooms
+        if (arguments[1]!=NULL){
+          strcpy(username, arguments[1]);
+          renameU(head, current_user->username, username);
+          int indx = 0;
+          while (indx<next_room_ID){
+            renameU(ROOMS[indx]->users, current_user->username, username);
+            indx ++;
+          }
+          strcpy(current_user->username, username);
+        }
+        else{
+          sprintf(buffer, "Not logged in: Enter your login name\n");
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
+        
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 

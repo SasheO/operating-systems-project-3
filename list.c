@@ -70,6 +70,7 @@ struct node* findU(struct node *head, char* username) {
 }
 
 //remove link with given user. this only deals with the linked list itself and not with the list header so if the node is at the front of the list, it will have to be dealt with accordingly. returns null if user not there or error
+// returns node if node was removed or null if nothing removed
 struct node* removeU(struct node *head, char* username) {
 
    //start from the first link
@@ -104,4 +105,11 @@ struct node* removeU(struct node *head, char* username) {
    }
    return NULL;
      
+}
+
+void renameU(struct node *head, char* oldusername, char* newusername){
+  struct node * link =  findU(head, oldusername);
+  if (link!=NULL){
+    strcpy(link->username, newusername);
+  }
 }

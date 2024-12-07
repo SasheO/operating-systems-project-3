@@ -28,4 +28,7 @@ struct node* findU(struct node *head, char* username);
 //remove link with given user. this only deals with the linked list itself and not with the list header so if the node is at the front of the list, it will have to be dealt with accordingly
 struct node* removeU(struct node *head, char* username);
 
+// rename user
+void renameU(struct node *head, char* oldusername, char* newusername);
+
 #endif
