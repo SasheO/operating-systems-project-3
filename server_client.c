@@ -97,10 +97,11 @@ void *client_receive(void *ptr) {
       // Arg[1] = user or room
 
       /////////////////////////////////////////////////////
-      // 2. Execute command: TODO
+      
 
 
       if(strcmp(arguments[0], "create") == 0){
+        // TODO: acquire locks for the ROOMS to create it
         printf("create room: %s\n", arguments[1]); 
         // perform the operations to create room arg[1]
         roomID = get_next_room_ID();
@@ -125,6 +126,7 @@ void *client_receive(void *ptr) {
       }
 
       else if (strcmp(arguments[0], "join") == 0){
+        // TODO: acquire locks to join room
         printf("join room: %s\n", arguments[1]);  
         if (arguments[1]==NULL){
           sprintf(buffer, "Give the name of the room you want to join.\nCommand 'rooms' gives a list of available rooms.\n");
@@ -157,6 +159,7 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }
       else if (strcmp(arguments[0], "leave") == 0){
+        // TODO: acquire locks to leave room
         printf("leave room: %s\n", arguments[1]); 
 
         // perform the operations to leave room arg[1]
@@ -170,6 +173,7 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 
       else if (strcmp(arguments[0], "connect") == 0){
+        // TODO: acquire locks to connect to user
         printf("connect to user: %s \n", arguments[1]);
 
         // perform the operations to connect user with socket = client from arg[1]
@@ -177,7 +181,8 @@ void *client_receive(void *ptr) {
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }
-      else if (strcmp(arguments[0], "disconnect") == 0){             
+      else if (strcmp(arguments[0], "disconnect") == 0){
+        // TODO: acquire locks to disconnect to user             
         printf("disconnect from user: %s\n", arguments[1]);
 
         // perform the operations to disconnect user with socket = client from arg[1]
@@ -186,6 +191,7 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }                  
       else if (strcmp(arguments[0], "rooms") == 0) {
+        // TODO: acquire locks to read room (ensure no one is writing)
         printf("List all the rooms\n");
 
         // must add put list of rooms into buffer to send to client
@@ -207,6 +213,7 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client                            
       }
       else if (strcmp(arguments[0], "users") == 0) {
+        // TODO: acquire locks to print users (ensure no one is writing)
         printf("List all the users\n");
 
         // must add put list of users into buffer to send to client
@@ -217,7 +224,7 @@ void *client_receive(void *ptr) {
       else if (strcmp(arguments[0], "login") == 0) {
 
         // TODO: rename their guestID to username. Make sure any room or DMs have the updated username.
-
+        // TODO: acquire locks to modify rooms
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 
