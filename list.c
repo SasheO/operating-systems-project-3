@@ -30,10 +30,15 @@ struct node* createAndInsertU(struct node *head, int socket, char *username) {
 // insert already existing link to first location
 struct node* insertU(struct node *head, struct node *link) {        
   //point it to old first node
+  if(findU(head,link->username) == NULL) {
   link->next = head;
 
   //point first to new first node
   head = link;
+  }
+  else{
+    printf("Duplicate: %s\n", link->username);
+  }
   return head;
 }
 

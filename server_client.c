@@ -72,7 +72,7 @@ void *client_receive(void *ptr) {
     if ((received = read(client , buffer, MAXBUFF)) != 0) {
 
       buffer[received] = '\0'; 
-      strcpy(cmd, buffer);  
+      strcpy(cmd, buffer);
       strcpy(sbuffer, buffer);
 
       /////////////////////////////////////////////////////
@@ -146,7 +146,7 @@ void *client_receive(void *ptr) {
           }
           else{ // remove user from current room and move them to intended room        
             add_user_to_room(current_user, ROOMS[indx]);
-            sprintf(buffer, "You have been moved to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
+            sprintf(buffer, "You have been added to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
             
           }
@@ -192,6 +192,13 @@ void *client_receive(void *ptr) {
         int indx = 0;
         while(indx<next_room_ID){
           strcat(buffer, ROOMS[indx]->roomname);
+          strcat(buffer, ": ");
+          other_user = ROOMS[indx]->users;
+          while (other_user!=NULL){
+            strcat(buffer, other_user->username);
+            strcat(buffer, ", ");
+            other_user = other_user->next;
+          }
           strcat(buffer, "\n");
           indx ++;
         }
