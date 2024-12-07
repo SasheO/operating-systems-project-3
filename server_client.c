@@ -9,6 +9,7 @@ extern char *server_MOTD;
 int next_room_ID = 1; // do not modify except in get_next_room_ID
 
 struct room * ROOMS[MAX_NUM_ROOMS];
+extern struct node * head;
 
 int get_next_room_ID();
 /*
@@ -63,8 +64,10 @@ void *client_receive(void *ptr) {
 
   sprintf(username,"guest%d", client);
 
-  // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
-  current_user = createAndInsertU(NULL, client , username);
+  // Create guest and add to the users list "head"
+  head = createAndInsertU(head, client , username); 
+  // add the GUEST to the DEFAULT ROOM (i.e. Lobby)
+  current_user = createAndInsertU(NULL, client , username); 
   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
 
   while (1) {
@@ -217,7 +220,14 @@ void *client_receive(void *ptr) {
         printf("List all the users\n");
 
         // must add put list of users into buffer to send to client
-
+        other_user = head;
+        printf("1\n");
+        while(other_user!=NULL){
+          strcat(buffer, other_user->username);
+          strcat(buffer, "\n");
+          other_user = other_user->next;
+        }
+        
         strcat(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }                           
