@@ -5,7 +5,7 @@
 #include "list.h"
 
 //insert node at the first location. setting head as NULL means this just creates and returns a new node
-struct node* createAndInsertU(struct node *head, int socket, char *username, int room) {
+struct node* createAndInsertU(struct node *head, int socket, char *username) {
     
    if(findU(head,username) == NULL) {
            
@@ -14,7 +14,6 @@ struct node* createAndInsertU(struct node *head, int socket, char *username, int
 
        link->socket = socket;
        strcpy(link->username,username);
-       link->current_room_ID = room;
        
        //point it to old first node
        link->next = head;

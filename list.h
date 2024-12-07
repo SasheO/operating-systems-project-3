@@ -10,7 +10,6 @@ struct node {
    char username[30];
    int socket;
    struct node *next;
-   int current_room_ID;
 };
 
  
@@ -18,7 +17,7 @@ struct node {
 /////////////////// USERLIST //////////////////////////
 
 //insert node at the first location. setting head as NULL means this just creates and returns a new node
-struct node* createAndInsertU(struct node *head, int socket, char *username, int room);
+struct node* createAndInsertU(struct node *head, int socket, char *username);
 
 // insert already existing link to first location
 struct node* insertU(struct node *nodelist, struct node *link);

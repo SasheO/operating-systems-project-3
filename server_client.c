@@ -64,7 +64,7 @@ void *client_receive(void *ptr) {
   sprintf(username,"guest%d", client);
 
   // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
-  current_user = createAndInsertU(NULL, client , username, DEFAULT_ROOM_ID);
+  current_user = createAndInsertU(NULL, client , username);
   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
 
   while (1) {
@@ -144,17 +144,11 @@ void *client_receive(void *ptr) {
             sprintf(buffer, "Room does not exist\n");
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
-          else{ // remove user from current room and move them to intended room
-            other_user = remove_user_from_room(ROOMS[current_user->current_room_ID], current_user->username);
-            if (other_user==NULL){ // remove_user_from_room function returns null if tehre is some issue so give an error message
-              sprintf(buffer, "Issue removing you from your current room %s\n", ROOMS[current_user->current_room_ID]->roomname);
-              send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
-            else{              
-              add_user_to_room(current_user, ROOMS[indx]);
-              sprintf(buffer, "You have been moved to room # %d: %s\n", current_user->current_room_ID, ROOMS[indx]->roomname);
-              send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
+          else{ // remove user from current room and move them to intended room        
+            add_user_to_room(current_user, ROOMS[indx]);
+            sprintf(buffer, "You have been moved to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            
           }
         }
         
@@ -166,7 +160,12 @@ void *client_receive(void *ptr) {
         printf("leave room: %s\n", arguments[1]); 
 
         // perform the operations to leave room arg[1]
-
+        /* other_user = remove_user_from_room( room id here, current_user->username);
+        if (other_user==NULL){ // remove_user_from_room function returns null if tehre is some issue so give an error message
+          sprintf(buffer, "Issue removing you from your current room %s\n", ROOMS[current_user->current_room_ID]->roomname);
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
+        */ 
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 

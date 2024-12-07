@@ -18,7 +18,6 @@ void name_room(struct room * myroom, char roomname[30]){
 }
 
 void add_user_to_room(struct node* user, struct room * myroom){
-  user->current_room_ID = myroom->roomID;
   myroom->users = insertU(myroom->users, user);
 }
 
