@@ -10,6 +10,7 @@ int next_room_ID = 1; // do not modify except in get_next_room_ID
 
 struct room * ROOMS[MAX_NUM_ROOMS];
 extern struct node * head;
+struct connection * connections;
 
 int get_next_room_ID();
 /*
@@ -180,8 +181,26 @@ void *client_receive(void *ptr) {
       else if (strcmp(arguments[0], "connect") == 0){
         // TODO: acquire locks to connect to user
         printf("connect to user: %s \n", arguments[1]);
-
+        if (arguments[1]==NULL){
+          sprintf(buffer, "Enter the username of user you want to conenct to.\nCommand 'users' gives a list of available users.\n");
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
         // perform the operations to connect user with socket = client from arg[1]
+        else{
+          strcpy(username, arguments[1]);
+          other_user = findU(head,username);
+          if(other_user == NULL){
+            sprintf(buffer, "User does not exist.\n>");
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+          }
+          else{
+            // TODO: change this to connection
+            connections = createAndInsertConnection(connections, current_user->username, other_user->username, buffer);
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            printConnections(connections);
+          }
+        } 
+        
 
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client

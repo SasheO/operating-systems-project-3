@@ -21,6 +21,7 @@
 /* Local Header Files */
 #include "list.h"
 #include "room.h"
+#include "connections.h"
 
 #define MAX_READERS 25
 #define TRUE   1  
@@ -33,7 +34,7 @@
 #define BACKLOG 2 
 #define DEFAULT_ROOM "Lobby"
 #define DEFAULT_ROOM_ID 0
-#define MAX_NUM_ROOMS 6
+#define MAX_NUM_ROOMS 2048
 
 // prototypes
 
