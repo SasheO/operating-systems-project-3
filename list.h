@@ -10,7 +10,7 @@ struct node {
    char username[30];
    int socket;
    struct node *next;
-   int room;
+   int current_room_ID;
 };
 
  
@@ -18,8 +18,15 @@ struct node {
 /////////////////// USERLIST //////////////////////////
 
 //insert node at the first location
-struct node* insertFirstU(struct node *head, int socket, char *username, int room);
+struct node* createAndInsertU(struct node *head, int socket, char *username, int room);
+
+// insert already existing link to first location
+struct node* insertU(struct node *nodelist, struct node *link);
 
 //find a node with given username
 struct node* findU(struct node *head, char* username);
+
+//remove link with given user. this only deals with the linked list itself and not with the list header so if the node is at the front of the list, it will have to be dealt with accordingly
+struct node* removeU(struct node *head, char* username);
+
 #endif

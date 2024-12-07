@@ -12,3 +12,26 @@ struct room * create_room(int roomID, char roomname[30]) {
   myroom->users = NULL;
   return myroom;
 }
+
+void name_room(struct room * myroom, char roomname[30]){
+  strcpy(myroom->roomname,roomname);
+}
+
+void add_user_to_room(struct node* user, struct room * myroom){
+  user->current_room_ID = myroom->roomID;
+  myroom->users = insertU(myroom->users, user);
+}
+
+struct node * remove_user_from_room(struct room * myroom, char username[30]){
+  //  returns null if user not there or error
+  struct node * firstuser=myroom->users;
+  struct node * user;
+  if (strcmp(firstuser->username, username) == 0){
+    myroom->users = NULL;
+    return firstuser;
+  }
+  else{ 
+    user = removeU(firstuser, username);
+    return user;
+  }
+}

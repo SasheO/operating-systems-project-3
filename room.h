@@ -15,8 +15,8 @@ struct room {
    int roomID; 
 };
 
-struct node * remove_user_from_room(struct node* user);
-struct node * add_user_to_room(struct node* user, char roomname[30]); 
+struct node * remove_user_from_room(struct room * myroom, char username[30]);
+void add_user_to_room(struct node* user, struct room * myroom); 
 struct room * create_room(int roomID, char roomname[30]);
-void name_room(int roomID);
+void name_room(struct room * myroom, char roomname[30]);
 #endif

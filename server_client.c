@@ -60,7 +60,7 @@ void *client_receive(void *ptr) {
    // Creating the guest user name
   
    sprintf(username,"guest%d", client);
-   head = insertFirstU(head, client , username, DEFAULT_ROOM_ID);
+   head = createAndInsertU(head, client , username, DEFAULT_ROOM_ID);
    
    // Add the GUEST to the DEFAULT ROOM (i.e. Lobby)
 
