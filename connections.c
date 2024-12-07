@@ -72,13 +72,14 @@ struct connection* findConnection(struct connection *head, char *username1, char
 }
 
 //remove link with given user. this only deals with the linked list itself and not with the list header so if the connection is at the front of the list, it will have to be dealt with accordingly
-struct connection* removeConnection(struct connection *head, char *username1, char *username2){
+struct connection* removeConnection(struct connection *head, char *username1, char *username2, char* message_output){
   //start from the first link
    struct connection* current = head;
    struct connection* prev = NULL;
 
    //if list is empty
    if(head == NULL) {
+      sprintf(message_output, "Connnection does not exist.\n");
       return NULL;
    }
 
@@ -90,6 +91,7 @@ struct connection* removeConnection(struct connection *head, char *username1, ch
       }
       //if it is last connection
       if(current->next == NULL) {
+        sprintf(message_output, "Connnection does not exist.\n");
          return NULL;
       } else {
          //go to next link
@@ -102,12 +104,23 @@ struct connection* removeConnection(struct connection *head, char *username1, ch
    //if username found, remove and the current Link
    condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
    if (condition){
-    if (prev!=NULL){ // first link
+    sprintf(message_output, "Connection successfully closed.\n");
+    if (prev!=NULL){ // not first link
       prev->next = current->next;
       current->next = NULL;
+      return head;
     }
-    return current;
+    else{ // first like i.e. no prev or prev == NULL
+      sprintf(message_output, "Connection successfully closed.\n");
+      current = current->next;
+      head->next = NULL;
+      return current;
+    }
+    
+    
+    
    }
+   sprintf(message_output, "Connnection does not exist.\n");
    return NULL;
 }
 

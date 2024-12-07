@@ -182,7 +182,7 @@ void *client_receive(void *ptr) {
         // TODO: acquire locks to connect to user
         printf("connect to user: %s \n", arguments[1]);
         if (arguments[1]==NULL){
-          sprintf(buffer, "Enter the username of user you want to conenct to.\nCommand 'users' gives a list of available users.\n");
+          sprintf(buffer, "Enter the username of user you want to connect to.\nCommand 'users' gives a list of available users.\n");
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
         // perform the operations to connect user with socket = client from arg[1]
@@ -190,7 +190,7 @@ void *client_receive(void *ptr) {
           strcpy(username, arguments[1]);
           other_user = findU(head,username);
           if(other_user == NULL){
-            sprintf(buffer, "User does not exist.\n>");
+            sprintf(buffer, "User does not exist. Note that usernames are case sensitive.\n");
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
           else{
@@ -210,7 +210,21 @@ void *client_receive(void *ptr) {
         printf("disconnect from user: %s\n", arguments[1]);
 
         // perform the operations to disconnect user with socket = client from arg[1]
-
+        if (arguments[1]==NULL){
+          sprintf(buffer, "Enter the username of user you want to disconnect from.\nCommand 'users' gives a list of available users.\n");
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
+        }
+        // perform the operations to connect user with socket = client from arg[1]
+        else{
+            strcpy(username, arguments[1]);
+            // TODO: change this to connection
+            connections = removeConnection(connections, current_user->username, username, buffer);
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            printf("1\n");
+            printConnections(connections);
+          
+        } 
+        
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }                  
