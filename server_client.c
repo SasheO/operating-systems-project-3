@@ -430,6 +430,16 @@ int get_next_room_ID(){
 }
 
 void freeAllResources(){
+  // inform users that server will be shut down soon
+  struct node * current_user = head;
+  char buffer[MAXBUFF];
+  sprintf(buffer, "NOTE: The server will be shut down in %d seconds. Please wrap up.\n\nchat>", GRACE_TIME_TO_SHUT_DOWN_SERVER_IN_SECS);
+  while(current_user!=NULL){
+    send(current_user->socket , buffer , strlen(buffer) , 0 );
+    current_user = current_user->next;
+  }
+  sleep(GRACE_TIME_TO_SHUT_DOWN_SERVER_IN_SECS);
+
   pthread_mutex_lock(&rw_lock);
   struct node * current;
   while(current!=NULL){

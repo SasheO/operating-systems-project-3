@@ -35,6 +35,7 @@ Date: 8 Dec 2024.
 #define delimiters " "
 #define max_clients  30
 #define DEFAULT_ROOM "Lobby"
+#define GRACE_TIME_TO_SHUT_DOWN_SERVER_IN_SECS 10
 #define MAXBUFF   2096
 #define BACKLOG 2 
 #define DEFAULT_ROOM "Lobby"
