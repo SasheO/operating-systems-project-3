@@ -50,7 +50,7 @@ struct connection* findConnection(struct connection *head, char *username1, char
    }
 
    //navigate through list
-   int condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+   int condition = isConnection(current, username1, username2);
     while(1){
       if (condition==1){
         break;
@@ -64,7 +64,7 @@ struct connection* findConnection(struct connection *head, char *username1, char
          current = current->next;
          
       }
-      condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+      condition = isConnection(current, username1, username2);
    }      
 	
    //if username found, return the current Link
@@ -84,7 +84,7 @@ struct connection* removeConnection(struct connection *head, char *username1, ch
    }
 
    //navigate through list
-    int condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+    int condition = isConnection(current, username1, username2);
     while(1){
       if (condition==1){
         break;
@@ -98,11 +98,11 @@ struct connection* removeConnection(struct connection *head, char *username1, ch
          prev = current;
          current = current->next;
       }
-      condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+      condition = isConnection(current, username1, username2);
    }      
 	
    //if username found, remove and the current Link
-   condition = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+   condition = isConnection(current, username1, username2);
    if (condition){
     sprintf(message_output, "Connection successfully closed.\n");
     if (prev!=NULL){ // not first link
@@ -163,4 +163,9 @@ void renameUserInConnectionsList(struct connection * connectionlist, char * oldu
     }
     current = current->next;
   }
+}
+
+int isConnection(struct connection * current, char *username1, char * username2){
+  int response = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
+  return response;
 }

@@ -267,8 +267,7 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }                           
       else if (strcmp(arguments[0], "login") == 0) {
-
-        // TODO: change usernames in DMS 
+ 
         // TODO: acquire locks to modify rooms
         if (arguments[1]!=NULL){
           strcpy(username, arguments[1]);
@@ -303,6 +302,7 @@ void *client_receive(void *ptr) {
       else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0) {
 
         //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
+        // remove 
         close(client); // close socket descriptor
       }                         
       else { 
@@ -329,7 +329,6 @@ void *client_receive(void *ptr) {
          while(current_connection != NULL) {
 
           // TODO: check that current user is in this connection.
-          // TODO: implement compare comparison function
           
             if (userInConnection(current_connection, current_user->username)==1){
               strcpy(username, getOtherUser(current_connection, current_user->username));              

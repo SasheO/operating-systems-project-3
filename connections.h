@@ -38,4 +38,7 @@ char * getOtherUser(struct connection *c, char* username);
 
 // returns the other username of the other user
 void renameUserInConnectionsList(struct connection * connectionlist, char * oldusername, char * newusername);
+
+// check if a connection is between the given users. returns 1 if it is and 0 if not.
+int isConnection(struct connection * c, char *username1, char * username2);
 #endif
