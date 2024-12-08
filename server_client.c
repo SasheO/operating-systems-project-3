@@ -2,7 +2,6 @@
 Authors: Mezisashe Ojuba (sole group member)
 Date: 8 Dec 2024.
 */
-
 #include "server.h"
 
 // USE THESE LOCKS AND COUNTER TO SYNCHRONIZE
@@ -13,7 +12,6 @@ extern pthread_mutex_t mutex; // for read count
 extern char *server_MOTD;
 extern struct node * head;
 int next_room_ID = 1; // do not modify except in get_next_room_ID
-
 struct room * ROOMS[MAX_NUM_ROOMS];
 struct connection * connections = NULL;
 
@@ -59,7 +57,6 @@ void *client_receive(void *ptr) {
   char *arguments[80];
   char roomname[30];
   int roomID;
-
 
   struct node *current_user;
   struct node *other_user; // for whenever we need to handle a user that is not self
@@ -122,7 +119,7 @@ void *client_receive(void *ptr) {
         // create room with name given or newroom+socketnumber if user did not name room
           pthread_mutex_lock(&rw_lock);
           strcpy(roomname, arguments[1]);
-          if (roomnameExists(roomname)==1){
+          if (roomExists(roomname)==1){
             printf("Duplicate room: %s\n", roomname);
           }
           else{
@@ -157,15 +154,21 @@ void *client_receive(void *ptr) {
           pthread_mutex_lock(&rw_lock);
           // perform the operations to join room arg[1]
           strcpy(roomname, arguments[1]);
-          int indx = 0;
-          while (indx<next_room_ID){ // find the room with the given name. if room does not exist, while loop will run until indx==next_room_ID
-            if (strcmp(ROOMS[indx]->roomname, roomname)==0){
-              add_user_to_room(current_user, ROOMS[indx]);
-              sprintf(buffer, "You have been added to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
-              send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            }
-            indx ++;
+          if (roomExists(roomname)==0){
+            sprintf(buffer, "You cannot join a room that does not exist.\nCommand 'rooms' gives a list of available rooms.\n");
           }
+          else{
+            int indx = 0;
+            while (indx<next_room_ID){ // find the room with the given name. if room does not exist, while loop will run until indx==next_room_ID
+              if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+                add_user_to_room(current_user, ROOMS[indx]);
+                sprintf(buffer, "You have been added to room # %d: %s\n", ROOMS[indx]->roomID, ROOMS[indx]->roomname);
+                
+              }
+              indx ++;
+            }
+          }
+          send(client , buffer , strlen(buffer) , 0 ); // send back to client
           pthread_mutex_unlock(&rw_lock);
         }
         
@@ -184,16 +187,19 @@ void *client_receive(void *ptr) {
           pthread_mutex_lock(&rw_lock);
           int indx = 0;
           strcpy(roomname, arguments[1]);
-          while (indx<next_room_ID){
-            // TODO: check if room exists, and message the user appropriately
-            if (strcmp(ROOMS[indx]->roomname, roomname)==0){
-              // TODO: check if user was even in room to begin with, and message the user appropriately
-              remove_user_from_room(ROOMS[indx], current_user->username);
-              sprintf(buffer, "You have been removed from ");
-              strcat(buffer, ROOMS[indx]->roomname);
-              send(client , buffer , strlen(buffer) , 0 ); // send back to client
+          if (roomExists(roomname)==0){
+            sprintf(buffer, "Room '%s' does not exist. Note that spellings are case-sensitive.\n", roomname);
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+          }
+          else{
+            while (indx<next_room_ID){
+              if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+                remove_user_from_room(ROOMS[indx], current_user->username);
+                sprintf(buffer, "If you were in room '%s', you have been removed from it.\n", roomname);
+                send(client , buffer , strlen(buffer) , 0 ); // send back to client
+              }
+              indx ++;
             }
-            indx ++;
           }
           pthread_mutex_unlock(&rw_lock);
         }
@@ -262,9 +268,9 @@ void *client_receive(void *ptr) {
         if(numReaders==1){
           pthread_mutex_lock(&rw_lock);
         }
-        printf("\n%d Reader is inside ",numReaders);
+         
         pthread_mutex_unlock(&mutex);
-        // must add put list of rooms into buffer to send to client
+
         int indx = 0;
         while(indx<next_room_ID){
           strcat(buffer, ROOMS[indx]->roomname);
@@ -287,7 +293,7 @@ void *client_receive(void *ptr) {
         if(numReaders==0){
           pthread_mutex_unlock(&rw_lock);
         }
-        printf("\n%d No reader inside",numReaders);
+          
         pthread_mutex_unlock(&mutex);
       }
       else if (strcmp(arguments[0], "users") == 0) {
@@ -297,7 +303,7 @@ void *client_receive(void *ptr) {
         if(numReaders==1){
           pthread_mutex_lock(&rw_lock);
         }
-        printf("\n%d Reader is inside ",numReaders);
+         
         pthread_mutex_unlock(&mutex);
         // must add put list of users into buffer to send to client
         other_user = head;
@@ -316,7 +322,7 @@ void *client_receive(void *ptr) {
         if(numReaders==0){
           pthread_mutex_unlock(&rw_lock);
         }
-        printf("\n%d No reader inside",numReaders);
+          
         pthread_mutex_unlock(&mutex);
       }                           
       else if (strcmp(arguments[0], "login") == 0) {
@@ -461,7 +467,7 @@ void freeAllResources(){
   pthread_mutex_unlock(&rw_lock);
 }
 
-int roomnameExists(char * roomname){
+int roomExists(char * roomname){
   int indx = 0;
   while(indx<next_room_ID){
     if (strcmp(ROOMS[indx]->roomname, roomname)==0){
