@@ -1,6 +1,8 @@
 /*
 Authors: Mezisashe Ojuba (sole group member)
 Date: 8 Dec 2024.
+Version: 1.0
+Distribution: https://github.com/SasheO/operating-systems-project-3
 */
 #include "server.h"
 
@@ -144,7 +146,6 @@ void *client_receive(void *ptr) {
       }
 
       else if (strcmp(arguments[0], "join") == 0){
-        // TODO: check if room exists and messag user appropriately. also prevent user from creating duplicate rooms and message appropriately
         printf("join room: %s\n", arguments[1]);  
         if (arguments[1]==NULL){
           sprintf(buffer, "Give the name of the room you want to join.\nCommand 'rooms' gives a list of available rooms.\n");

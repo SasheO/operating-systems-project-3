@@ -1,6 +1,8 @@
 /*
 Authors: Mezisashe Ojuba (sole group member)
 Date: 8 Dec 2024.
+Version: 1.0
+Distribution: https://github.com/SasheO/operating-systems-project-3
 */
 
 #ifndef CONNECTIONS_H
