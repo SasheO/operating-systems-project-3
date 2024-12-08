@@ -109,7 +109,7 @@ struct node* removeU(struct node *head, char* username) {
 
 void renameU(struct node *head, char* oldusername, char* newusername){
   struct node * link =  findU(head, oldusername);
-  if (link!=NULL){
+  if (link!=NULL){ 
     strcpy(link->username, newusername);
   }
 }

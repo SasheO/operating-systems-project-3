@@ -35,4 +35,7 @@ int userInConnection(struct connection *c, char* username);
 
 // returns the other username of the other user
 char * getOtherUser(struct connection *c, char* username);
+
+// returns the other username of the other user
+void renameUserInConnectionsList(struct connection * connectionlist, char * oldusername, char * newusername);
 #endif

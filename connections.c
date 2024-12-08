@@ -149,3 +149,18 @@ char * getOtherUser(struct connection *c, char* username){
   }
   return NULL;
 }
+
+void renameUserInConnectionsList(struct connection * connectionlist, char * oldusername, char * newusername){
+  struct connection* current = connectionlist;
+  while (current!=NULL){
+    if (userInConnection(current, oldusername)){
+      if (strcmp(current->username1, oldusername)==0){
+        strcpy(current->username1, newusername);
+      }
+      else if (strcmp(current->username2, oldusername)==0){
+        strcpy(current->username2, newusername);
+      }
+    }
+    current = current->next;
+  }
+}

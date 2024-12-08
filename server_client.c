@@ -272,13 +272,21 @@ void *client_receive(void *ptr) {
         // TODO: acquire locks to modify rooms
         if (arguments[1]!=NULL){
           strcpy(username, arguments[1]);
-          renameU(head, current_user->username, username);
-          int indx = 0;
-          while (indx<next_room_ID){
-            renameU(ROOMS[indx]->users, current_user->username, username);
-            indx ++;
+          if (findU(head, username)!=NULL){
+            sprintf(buffer, "Not logged in: Username taken.\n");
+            send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
-          strcpy(current_user->username, username);
+          else{
+            renameU(head, current_user->username, username);
+            int indx = 0;
+            while (indx<next_room_ID){
+              renameU(ROOMS[indx]->users, current_user->username, username);
+              indx ++;
+            }
+            renameUserInConnectionsList(connections, current_user->username, username);
+            strcpy(current_user->username, username);
+
+          }
         }
         else{
           sprintf(buffer, "Not logged in: Enter your login name\n");
