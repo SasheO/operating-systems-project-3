@@ -126,7 +126,7 @@ void *client_receive(void *ptr) {
             sprintf(buffer, "Success creating room\n");
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
-          pthread_mutex_lock(&rw_lock);
+          pthread_mutex_unlock(&rw_lock);
         }
 
         sprintf(buffer, "\nchat>");
