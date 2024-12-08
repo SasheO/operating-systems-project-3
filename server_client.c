@@ -2,8 +2,8 @@
 
 // USE THESE LOCKS AND COUNTER TO SYNCHRONIZE
 extern int numReaders;
-extern pthread_mutex_t rw_lock;
-extern pthread_mutex_t mutex;
+extern pthread_mutex_t rw_lock; // to lock when writing
+extern pthread_mutex_t mutex; // for read count
 
 extern char *server_MOTD;
 int next_room_ID = 1; // do not modify except in get_next_room_ID
@@ -105,7 +105,6 @@ void *client_receive(void *ptr) {
 
 
       if(strcmp(arguments[0], "create") == 0){
-        // TODO: acquire locks for the ROOMS to create it
         printf("create room: %s\n", arguments[1]); 
         // perform the operations to create room arg[1]
         if(arguments[1]==NULL){
@@ -114,6 +113,7 @@ void *client_receive(void *ptr) {
         }
         else{
         // create room with name given or newroom+socketnumber if user did not name room
+        pthread_mutex_lock(&rw_lock);
           roomID = get_next_room_ID();
           if(roomID>=MAX_NUM_ROOMS){
           // too many rooms already
@@ -126,6 +126,7 @@ void *client_receive(void *ptr) {
             sprintf(buffer, "Success creating room\n");
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
+          pthread_mutex_lock(&rw_lock);
         }
 
         sprintf(buffer, "\nchat>");
@@ -133,13 +134,14 @@ void *client_receive(void *ptr) {
       }
 
       else if (strcmp(arguments[0], "join") == 0){
-        // TODO: acquire locks to join room
+        
         printf("join room: %s\n", arguments[1]);  
         if (arguments[1]==NULL){
           sprintf(buffer, "Give the name of the room you want to join.\nCommand 'rooms' gives a list of available rooms.\n");
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
         else{
+          pthread_mutex_lock(&rw_lock);
           // perform the operations to join room arg[1]
           strcpy(roomname, arguments[1]);
           int indx = 0;
@@ -151,6 +153,7 @@ void *client_receive(void *ptr) {
             }
             indx ++;
           }
+          pthread_mutex_unlock(&rw_lock);
         }
         
 
@@ -158,13 +161,14 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }
       else if (strcmp(arguments[0], "leave") == 0){
-        // TODO: acquire locks to leave room
+        
         printf("leave room: %s\n", arguments[1]); 
         if (arguments[1]==NULL){
           sprintf(buffer, "Give the name of the room you want to leave.\nCommand 'rooms' gives a list of available rooms.\n");
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
         else{
+          pthread_mutex_lock(&rw_lock);
           int indx = 0;
           strcpy(roomname, arguments[1]);
           while (indx<next_room_ID){
@@ -173,13 +177,15 @@ void *client_receive(void *ptr) {
             }
             indx ++;
           }
+          pthread_mutex_unlock(&rw_lock);
         }
         
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       } 
       else if (strcmp(arguments[0], "connect") == 0){
-        // TODO: acquire locks to connect to user
+        
+        
         printf("connect to user: %s \n", arguments[1]);
         if (arguments[1]==NULL){
           sprintf(buffer, "Enter the username of user you want to connect to.\nCommand 'users' gives a list of available users.\n");
@@ -187,6 +193,7 @@ void *client_receive(void *ptr) {
         }
         // perform the operations to connect user with socket = client from arg[1]
         else{
+          pthread_mutex_lock(&rw_lock);
           strcpy(username, arguments[1]);
           other_user = findU(head,username);
           if(other_user == NULL){
@@ -198,14 +205,14 @@ void *client_receive(void *ptr) {
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
             printConnections(connections);
           }
+          pthread_mutex_unlock(&rw_lock);
         } 
         
 
         sprintf(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }
-      else if (strcmp(arguments[0], "disconnect") == 0){
-        // TODO: acquire locks to disconnect to user             
+      else if (strcmp(arguments[0], "disconnect") == 0){         
         printf("disconnect from user: %s\n", arguments[1]);
 
         // perform the operations to disconnect user with socket = client from arg[1]
@@ -215,11 +222,13 @@ void *client_receive(void *ptr) {
         }
         // perform the operations to connect user with socket = client from arg[1]
         else{
+          pthread_mutex_lock(&rw_lock);
             strcpy(username, arguments[1]);
             connections = removeConnection(connections, current_user->username, username, buffer);
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
             printf("1\n");
             printConnections(connections);
+            pthread_mutex_unlock(&rw_lock);
           
         } 
         
@@ -227,9 +236,16 @@ void *client_receive(void *ptr) {
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
       }                  
       else if (strcmp(arguments[0], "rooms") == 0) {
-        // TODO: acquire locks to read room (ensure no one is writing)
+        
         printf("List all the rooms\n");
 
+        pthread_mutex_lock(&mutex);
+        numReaders++;
+        if(numReaders==1){
+          pthread_mutex_lock(&rw_lock);
+        }
+        printf("\n%d Reader is inside ",numReaders);
+        pthread_mutex_unlock(&mutex);
         // must add put list of rooms into buffer to send to client
         int indx = 0;
         while(indx<next_room_ID){
@@ -247,11 +263,24 @@ void *client_receive(void *ptr) {
 
         strcat(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client                            
+        
+        pthread_mutex_lock(&mutex);
+        numReaders--;
+        if(numReaders==0){
+          pthread_mutex_unlock(&rw_lock);
+        }
+        printf("\n%d No reader inside",numReaders);
+        pthread_mutex_unlock(&mutex);
       }
       else if (strcmp(arguments[0], "users") == 0) {
-        // TODO: acquire locks to print users (ensure no one is writing)
         printf("List all the users\n");
-
+        pthread_mutex_lock(&mutex);
+        numReaders++;
+        if(numReaders==1){
+          pthread_mutex_lock(&rw_lock);
+        }
+        printf("\n%d Reader is inside ",numReaders);
+        pthread_mutex_unlock(&mutex);
         // must add put list of users into buffer to send to client
         other_user = head;
         printf("1\n");
@@ -263,11 +292,19 @@ void *client_receive(void *ptr) {
         
         strcat(buffer, "\nchat>");
         send(client , buffer , strlen(buffer) , 0 ); // send back to client
+
+        pthread_mutex_lock(&mutex);
+        numReaders--;
+        if(numReaders==0){
+          pthread_mutex_unlock(&rw_lock);
+        }
+        printf("\n%d No reader inside",numReaders);
+        pthread_mutex_unlock(&mutex);
       }                           
       else if (strcmp(arguments[0], "login") == 0) {
- 
-        // TODO: acquire locks to modify rooms
+        
         if (arguments[1]!=NULL){
+          pthread_mutex_lock(&rw_lock);
           strcpy(username, arguments[1]);
           if (findU(head, username)!=NULL){
             sprintf(buffer, "Not logged in: Username taken.\n");
@@ -284,6 +321,7 @@ void *client_receive(void *ptr) {
             strcpy(current_user->username, username);
 
           }
+          pthread_mutex_unlock(&rw_lock);
         }
         else{
           sprintf(buffer, "Not logged in: Enter your login name\n");
@@ -300,7 +338,7 @@ void *client_receive(void *ptr) {
       else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0) {
 
         //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
-        // remove 
+        // remove user from rooms and chats, free all memory, tell other users they have left the chat, then close.
         close(client); // close socket descriptor
       }                         
       else { 
@@ -343,7 +381,6 @@ void *client_receive(void *ptr) {
 
 
 int get_next_room_ID(){
-  // TODO: acquire lock for next_room_ID
   next_room_ID++;
   return next_room_ID-1;
 }

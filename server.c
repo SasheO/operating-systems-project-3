@@ -40,7 +40,12 @@ int main(int argc, char **argv) {
    }
    
    printf("Server Launched! Listening on PORT: %d\n", PORT);
-    
+
+   // initialize mutex
+  pthread_mutex_init( &rw_lock, NULL);
+  pthread_mutex_init( &mutex, NULL);
+  numReaders = 0;
+
    //Main execution loop
    while(1) {
       //Accept a connection, start a thread
