@@ -15,7 +15,7 @@ extern struct node * head;
 int next_room_ID = 1; // do not modify except in get_next_room_ID
 
 struct room * ROOMS[MAX_NUM_ROOMS];
-struct connection * connections;
+struct connection * connections = NULL;
 
 int get_next_room_ID();
 /*
@@ -120,19 +120,25 @@ void *client_receive(void *ptr) {
         }
         else{
         // create room with name given or newroom+socketnumber if user did not name room
-        pthread_mutex_lock(&rw_lock);
-          roomID = get_next_room_ID();
-          if(roomID>=MAX_NUM_ROOMS){
-          // too many rooms already
-            sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
-            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+          pthread_mutex_lock(&rw_lock);
+          strcpy(roomname, arguments[1]);
+          if (roomnameExists(roomname)==1){
+            printf("Duplicate room: %s\n", roomname);
           }
           else{
-            strcpy(roomname, arguments[1]);
-            ROOMS[roomID] = create_room(roomID, roomname);
-            sprintf(buffer, "Success creating room\n");
-            send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            roomID = get_next_room_ID();
+            if(roomID>=MAX_NUM_ROOMS){
+            // too many rooms already
+              sprintf(buffer, "You cannot create a room at this time. Max room number reached!\n");
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            }
+            else{
+              ROOMS[roomID] = create_room(roomID, roomname);
+              sprintf(buffer, "Success creating room\n");
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
+            }
           }
+          
           pthread_mutex_unlock(&rw_lock);
         }
 
@@ -349,8 +355,6 @@ void *client_receive(void *ptr) {
       }
       else if (strcmp(arguments[0], "exit") == 0 || strcmp(arguments[0], "logout") == 0) {
 
-        //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
-        // remove user from rooms and chats, free all memory, tell other users they have left the chat, then close.
         pthread_mutex_lock(&rw_lock);
         // remove user from all rooms
         int indx = 0;
@@ -365,10 +369,12 @@ void *client_receive(void *ptr) {
         printf("user removed\n");
 
         // remove user's connections
-        connections = removeAllConnectionsWithUserFromConnectionsList(connections, current_user->username);
-        printConnections(connections);
-        printf("connections removed\n");
-
+        if (connections!=NULL){
+          connections = removeAllConnectionsWithUserFromConnectionsList(connections, current_user->username);
+          printConnections(connections);
+          printf("connections removed\n");
+        }
+        
         free(current_user);
         current_user = NULL;
 
@@ -443,4 +449,16 @@ void freeAllResources(){
   printf("All connections/DMs closed\n");
   printf("All resources have been freed\n");
   pthread_mutex_unlock(&rw_lock);
+}
+
+int roomnameExists(char * roomname){
+  int indx = 0;
+  while(indx<next_room_ID){
+    if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+      return 1;
+    }
+
+    indx++;
+  }
+  return 0;
 }

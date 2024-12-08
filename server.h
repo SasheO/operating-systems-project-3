@@ -50,5 +50,6 @@ void sigintHandler(int sig_num);
 void *client_receive(void *ptr);
 void create_default_room();
 void freeAllResources();
+int roomnameExists(char * roomname);
 
 #endif
