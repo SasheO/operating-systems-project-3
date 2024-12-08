@@ -25,7 +25,7 @@ struct connection* insertConnection(struct connection *connectionlist, struct co
 //find a connection with given username
 struct connection* findConnection(struct connection *head, char *username1, char *username2);
 
-//remove link with given user. this only deals with the linked list itself and not with the list header so if the connection is at the front of the list, it will have to be dealt with accordingly
+//remove link with given user. reassign head to the outptut of this function since it modifies the linked list
 struct connection* removeConnection(struct connection *head, char *username1, char *username2,char* message_output);
 
 void printConnections(struct connection *head);
@@ -41,4 +41,6 @@ void renameUserInConnectionsList(struct connection * connectionlist, char * oldu
 
 // check if a connection is between the given users. returns 1 if it is and 0 if not.
 int isConnection(struct connection * c, char *username1, char * username2);
+
+struct connection * removeAllConnectionsWithUserFromConnectionsList(struct connection * connections, char *username);
 #endif

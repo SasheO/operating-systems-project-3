@@ -339,6 +339,31 @@ void *client_receive(void *ptr) {
 
         //TODO: Remove the initiating user from all rooms and direct connections, then close the socket descriptor.
         // remove user from rooms and chats, free all memory, tell other users they have left the chat, then close.
+        pthread_mutex_lock(&rw_lock);
+        // remove user from all rooms
+        int indx = 0;
+        while (indx<next_room_ID){
+          remove_user_from_room(ROOMS[indx], current_user->username);
+          indx++;
+        }
+        printf("rooms removed\n");
+
+        
+
+
+        // remove user's connections
+        connections = removeAllConnectionsWithUserFromConnectionsList(connections, current_user->username);
+        printConnections(connections);
+        printf("connections removed\n");
+
+        // delete user
+        removeU(head, current_user->username);
+        printf("user removed\n");
+
+        free(current_user);
+        current_user = NULL;
+
+        pthread_mutex_unlock(&rw_lock);
         close(client); // close socket descriptor
       }                         
       else { 

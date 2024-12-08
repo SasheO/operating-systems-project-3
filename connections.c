@@ -71,7 +71,7 @@ struct connection* findConnection(struct connection *head, char *username1, char
    return current;
 }
 
-//remove link with given user. this only deals with the linked list itself and not with the list header so if the connection is at the front of the list, it will have to be dealt with accordingly
+//remove link with given user. reassign head to the outptut of this function since it modifies the linked list
 struct connection* removeConnection(struct connection *head, char *username1, char *username2, char* message_output){
   //start from the first link
    struct connection* current = head;
@@ -108,15 +108,18 @@ struct connection* removeConnection(struct connection *head, char *username1, ch
     if (prev!=NULL){ // not first link
       prev->next = current->next;
       current->next = NULL;
+      free(current); // deallocate
+      current = NULL;
       return head;
     }
     else{ // first like i.e. no prev or prev == NULL
       sprintf(message_output, "Connection successfully closed.\n");
       current = current->next;
       head->next = NULL;
+      free(head); // deallocate
+      head = NULL;
       return current;
     }
-    
     
     
    }
@@ -168,4 +171,38 @@ void renameUserInConnectionsList(struct connection * connectionlist, char * oldu
 int isConnection(struct connection * current, char *username1, char * username2){
   int response = ((strcmp(current->username1, username1) == 0)&&(strcmp(current->username2, username2) == 0))||((strcmp(current->username1, username2) == 0)&&(strcmp(current->username2, username1) == 0));
   return response;
+}
+
+struct connection * removeAllConnectionsWithUserFromConnectionsList(struct connection * connections, char *username){
+  struct connection * head = connections;
+  struct connection * next;
+  struct connection * prev;
+  char * other_username;
+
+  char dummymessage[30];
+  dummymessage[0] = '\0';
+  while (userInConnection(head,username)){
+    next = head->next;
+    free(head);
+    head = NULL;
+    head = next;
+  }
+
+  prev = head;
+  next = head->next;
+
+  while(next!=NULL){
+    if(userInConnection(next,username)){
+      other_username = getOtherUser(next, username);
+      prev->next = removeConnection(next, username, other_username, dummymessage);
+      next = prev->next;
+    }
+    else{
+      prev = prev->next;
+      next = next->next;
+    }
+  }
+
+
+  return head;
 }
