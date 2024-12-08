@@ -34,3 +34,8 @@ struct node * remove_user_from_room(struct room * myroom, char username[30]){
     return user;
   }
 }
+
+void renameUserInRoom(struct room* myroom, char * oldusername, char * newusername){
+  renameU(myroom->users, oldusername, newusername);
+}
+

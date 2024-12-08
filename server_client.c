@@ -279,7 +279,7 @@ void *client_receive(void *ptr) {
             renameU(head, current_user->username, username);
             int indx = 0;
             while (indx<next_room_ID){
-              renameU(ROOMS[indx]->users, current_user->username, username);
+              renameUserInRoom(ROOMS[indx], current_user->username, username);
               indx ++;
             }
             renameUserInConnectionsList(connections, current_user->username, username);
