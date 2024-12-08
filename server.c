@@ -133,7 +133,7 @@ void sigintHandler(int sig_num) {
    //////////////////////////////////////////////////////////
 
    printf("--------CLOSING ACTIVE USERS--------\n");
-
+   freeAllResources();
    close(chat_serv_sock_fd);
    exit(0);
 }

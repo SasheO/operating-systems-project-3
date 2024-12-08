@@ -30,3 +30,8 @@ void renameUserInRoom(struct room* myroom, char * oldusername, char * newusernam
   renameU(myroom->users, oldusername, newusername);
 }
 
+void deleteRoom(struct room *myroom){
+  deleteAllUs(myroom->users);
+  free(myroom);
+  myroom=NULL;
+}

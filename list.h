@@ -31,4 +31,6 @@ struct node* removeU(struct node *head, char* username);
 // rename user
 void renameU(struct node *head, char* oldusername, char* newusername);
 
+// delete and deallocate every node in the list
+void deleteAllUs(struct node *head);
 #endif

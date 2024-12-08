@@ -44,5 +44,6 @@ int accept_client(int serv_sock);
 void sigintHandler(int sig_num);
 void *client_receive(void *ptr);
 void create_default_room();
+void freeAllResources();
 
 #endif

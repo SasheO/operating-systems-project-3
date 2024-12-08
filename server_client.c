@@ -72,7 +72,7 @@ void *client_receive(void *ptr) {
   current_user = createAndInsertU(NULL, client , username); 
   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
   pthread_mutex_unlock(&rw_lock);
-  
+
   while (1) {
       
     if ((received = read(client , buffer, MAXBUFF)) != 0) {
@@ -416,4 +416,26 @@ void *client_receive(void *ptr) {
 int get_next_room_ID(){
   next_room_ID++;
   return next_room_ID-1;
+}
+
+void freeAllResources(){
+  pthread_mutex_lock(&rw_lock);
+  struct node * current;
+  while(current!=NULL){
+    close(current->socket);
+    current=current->next;
+  }
+  printf("All sockets closed.\n");
+  deleteAllUs(head);
+  printf("All users deleted.\n");
+  int indx = 0;
+  while (indx<next_room_ID){
+    deleteRoom(ROOMS[indx]);
+    indx ++;
+  }
+  printf("All rooms deleted.\n");
+  closeAllConnections(connections);
+  printf("All connections/DMs closed\n");
+  printf("All resources have been freed\n");
+  pthread_mutex_unlock(&rw_lock);
 }

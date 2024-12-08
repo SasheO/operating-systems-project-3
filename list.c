@@ -117,3 +117,17 @@ void renameU(struct node *head, char* oldusername, char* newusername){
     strcpy(link->username, newusername);
   }
 }
+
+void deleteAllUs(struct node *head){
+  struct node * curr = head;
+  struct node * next;
+
+  while (curr!=NULL){
+    next = curr->next;
+
+    free(curr);
+    curr = NULL;
+    
+    curr = next;
+  }
+}

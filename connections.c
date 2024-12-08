@@ -213,3 +213,15 @@ struct connection * removeAllConnectionsWithUserFromConnectionsList(struct conne
   printf("5\n");
   return head;
 }
+
+void closeAllConnections(struct connection * connectionslist){
+  struct connection * curr = connectionslist;
+  struct connection * next;
+
+  while (curr != NULL){
+    next = curr->next;
+    free(curr);
+    curr = NULL;
+    curr = next;
+  }
+}

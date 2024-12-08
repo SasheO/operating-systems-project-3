@@ -21,4 +21,7 @@ struct room * create_room(int roomID, char roomname[30]);
 void name_room(struct room * myroom, char roomname[30]);
 
 void renameUserInRoom(struct room* myroom, char * oldusername, char * newusername);
+
+// delete and deallocate room in the list
+void deleteRoom(struct room *myroom);
 #endif

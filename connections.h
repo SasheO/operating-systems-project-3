@@ -43,4 +43,6 @@ void renameUserInConnectionsList(struct connection * connectionlist, char * oldu
 int isConnection(struct connection * c, char *username1, char * username2);
 
 struct connection * removeAllConnectionsWithUserFromConnectionsList(struct connection * connections, char *username);
+
+void closeAllConnections(struct connection * connectionslist);
 #endif
