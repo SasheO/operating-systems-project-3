@@ -179,6 +179,7 @@ struct connection * removeAllConnectionsWithUserFromConnectionsList(struct conne
   struct connection * prev;
   char * other_username;
 
+  printf("1\n");
   char dummymessage[30];
   dummymessage[0] = '\0';
   while (userInConnection(head,username)){
@@ -186,6 +187,10 @@ struct connection * removeAllConnectionsWithUserFromConnectionsList(struct conne
     free(head);
     head = NULL;
     head = next;
+    printf("2\n");
+    if (head==NULL){
+      return head;
+    }
   }
 
   prev = head;
@@ -193,16 +198,18 @@ struct connection * removeAllConnectionsWithUserFromConnectionsList(struct conne
 
   while(next!=NULL){
     if(userInConnection(next,username)){
+      printf("3\n");
       other_username = getOtherUser(next, username);
       prev->next = removeConnection(next, username, other_username, dummymessage);
       next = prev->next;
     }
     else{
+      printf("4\n");
       prev = prev->next;
       next = next->next;
     }
   }
 
-
+  printf("5\n");
   return head;
 }

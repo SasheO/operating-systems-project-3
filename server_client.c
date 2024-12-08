@@ -348,23 +348,23 @@ void *client_receive(void *ptr) {
         }
         printf("rooms removed\n");
 
-        
-
+        // delete user
+        removeU(head, current_user->username);
+        printf("user removed\n");
 
         // remove user's connections
         connections = removeAllConnectionsWithUserFromConnectionsList(connections, current_user->username);
         printConnections(connections);
         printf("connections removed\n");
 
-        // delete user
-        removeU(head, current_user->username);
-        printf("user removed\n");
-
         free(current_user);
         current_user = NULL;
 
         pthread_mutex_unlock(&rw_lock);
         close(client); // close socket descriptor
+        printf("exited\n");
+        break;
+        
       }                         
       else { 
         /////////////////////////////////////////////////////////////
@@ -401,6 +401,7 @@ void *client_receive(void *ptr) {
       memset(buffer, 0, sizeof(1024));
     }
   }
+  printf("about to return\n");
   return NULL;
 }
 
