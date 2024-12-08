@@ -29,4 +29,10 @@ struct connection* findConnection(struct connection *head, char *username1, char
 struct connection* removeConnection(struct connection *head, char *username1, char *username2,char* message_output);
 
 void printConnections(struct connection *head);
+
+// returns 1 if user is in connection, 0 if not
+int userInConnection(struct connection *c, char* username);
+
+// returns the other username of the other user
+char * getOtherUser(struct connection *c, char* username);
 #endif

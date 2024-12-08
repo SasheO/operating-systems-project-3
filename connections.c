@@ -131,3 +131,21 @@ void printConnections(struct connection *head){
     current = current->next;
   }
 }
+
+int userInConnection(struct connection *c, char* username){
+  
+  if ((strcmp(c->username1, username)==0)||(strcmp(c->username2, username)==0)){
+    return 1;
+  }
+  return 0;
+}
+
+char * getOtherUser(struct connection *c, char* username){
+  if ((strcmp(c->username1, username)==0)){
+    return c->username2;
+  }
+  if ((strcmp(c->username2, username)==0)){
+    return c->username1;
+  }
+  return NULL;
+}

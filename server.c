@@ -12,6 +12,7 @@ pthread_mutex_t rw_lock = PTHREAD_MUTEX_INITIALIZER;  // read/write lock
 
 /////////////////////////////////////////////
 
+
 char const *server_MOTD = "Thanks for connecting to the BisonChat Server.\n\nchat>";
 
 struct node *head = NULL;

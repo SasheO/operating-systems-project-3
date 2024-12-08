@@ -304,18 +304,36 @@ void *client_receive(void *ptr) {
         // send a message in the following format followed by the promt chat> to the appropriate receipients based on rooms, DMs
         // ::[userfrom]> <message>
 
-        sprintf(tmpbuf,"\n::%s> %s\nchat>", "PUTUSERFROM", sbuffer);
+
+        // int indx = 0;
+        // while(arguments[indx]!=NULL){
+        //   strcat(buffer, arguments[indx]);
+        //   strcat(buffer, " ");
+        //   indx++;
+        // }
+
+        sprintf(tmpbuf,"\n::%s> %s\nchat>", current_user->username, sbuffer);
         strcpy(sbuffer, tmpbuf);
 
-        //  current_user = head;
-        //  while(current_user != NULL) {
+        
 
-        //      if(client != current_user->socket){  // dont send to yourcurrent_user 
+        struct connection * current_connection = connections;
+         while(current_connection != NULL) {
 
-        //          send(current_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
-        //      }
-        //      current_user = current_user->next;
-        //  }
+          // TODO: check that current user is in this connection.
+          // TODO: implement compare comparison function
+          
+            if (userInConnection(current_connection, current_user->username)==1){
+              strcpy(username, getOtherUser(current_connection, current_user->username));              
+              other_user = findU(head, username);
+              
+              
+              send(other_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
+            }
+            
+             
+            current_connection = current_connection->next;
+         }
 
       }
 
@@ -323,6 +341,7 @@ void *client_receive(void *ptr) {
     }
   }
   return NULL;
+  // TODO: exit causes segmentation error, make login usernames unique
 }
 
 
