@@ -194,7 +194,6 @@ void *client_receive(void *ptr) {
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
           }
           else{
-            // TODO: change this to connection
             connections = createAndInsertConnection(connections, current_user->username, other_user->username, buffer);
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
             printConnections(connections);
@@ -217,7 +216,6 @@ void *client_receive(void *ptr) {
         // perform the operations to connect user with socket = client from arg[1]
         else{
             strcpy(username, arguments[1]);
-            // TODO: change this to connection
             connections = removeConnection(connections, current_user->username, username, buffer);
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
             printf("1\n");
@@ -327,18 +325,11 @@ void *client_receive(void *ptr) {
 
         struct connection * current_connection = connections;
          while(current_connection != NULL) {
-
-          // TODO: check that current user is in this connection.
-          
             if (userInConnection(current_connection, current_user->username)==1){
               strcpy(username, getOtherUser(current_connection, current_user->username));              
               other_user = findU(head, username);
-              
-              
               send(other_user->socket , sbuffer , strlen(sbuffer) , 0 ); 
             }
-            
-             
             current_connection = current_connection->next;
          }
 
@@ -348,12 +339,11 @@ void *client_receive(void *ptr) {
     }
   }
   return NULL;
-  // TODO: exit causes segmentation error, make login usernames unique
 }
 
 
 int get_next_room_ID(){
-  // TODO: acquaire lock for next_room_ID
+  // TODO: acquire lock for next_room_ID
   next_room_ID++;
   return next_room_ID-1;
 }
