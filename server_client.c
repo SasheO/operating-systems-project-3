@@ -6,10 +6,10 @@ extern pthread_mutex_t rw_lock; // to lock when writing
 extern pthread_mutex_t mutex; // for read count
 
 extern char *server_MOTD;
+extern struct node * head;
 int next_room_ID = 1; // do not modify except in get_next_room_ID
 
 struct room * ROOMS[MAX_NUM_ROOMS];
-extern struct node * head;
 struct connection * connections;
 
 int get_next_room_ID();
@@ -66,11 +66,13 @@ void *client_receive(void *ptr) {
   sprintf(username,"guest%d", client);
 
   // Create guest and add to the users list "head"
+  pthread_mutex_lock(&rw_lock);
   head = createAndInsertU(head, client , username); 
   // add the GUEST to the DEFAULT ROOM (i.e. Lobby)
   current_user = createAndInsertU(NULL, client , username); 
   add_user_to_room(current_user, ROOMS[DEFAULT_ROOM_ID]);
-
+  pthread_mutex_unlock(&rw_lock);
+  
   while (1) {
       
     if ((received = read(client , buffer, MAXBUFF)) != 0) {
