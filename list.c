@@ -101,9 +101,13 @@ struct node* removeU(struct node *head, char* username) {
       prev->next = current->next;
       current->next = NULL;
     }
-    return current;
+    else{
+      head = current->next;
+    }
+    free(current);
+    current=NULL;
    }
-   return NULL;
+   return head;
      
 }
 

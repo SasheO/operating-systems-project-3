@@ -134,7 +134,7 @@ void *client_receive(void *ptr) {
       }
 
       else if (strcmp(arguments[0], "join") == 0){
-        
+        // TODO: check if room exists and messag user appropriately. also prevent user from creating duplicate rooms and message appropriately
         printf("join room: %s\n", arguments[1]);  
         if (arguments[1]==NULL){
           sprintf(buffer, "Give the name of the room you want to join.\nCommand 'rooms' gives a list of available rooms.\n");
@@ -172,8 +172,13 @@ void *client_receive(void *ptr) {
           int indx = 0;
           strcpy(roomname, arguments[1]);
           while (indx<next_room_ID){
+            // TODO: check if room exists, and message the user appropriately
             if (strcmp(ROOMS[indx]->roomname, roomname)==0){
+              // TODO: check if user was even in room to begin with, and message the user appropriately
               remove_user_from_room(ROOMS[indx], current_user->username);
+              sprintf(buffer, "You have been removed from ");
+              strcat(buffer, ROOMS[indx]->roomname);
+              send(client , buffer , strlen(buffer) , 0 ); // send back to client
             }
             indx ++;
           }
@@ -349,7 +354,7 @@ void *client_receive(void *ptr) {
         printf("rooms removed\n");
 
         // delete user
-        removeU(head, current_user->username);
+        head = removeU(head, current_user->username);
         printf("user removed\n");
 
         // remove user's connections

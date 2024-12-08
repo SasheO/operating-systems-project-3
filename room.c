@@ -21,18 +21,9 @@ void add_user_to_room(struct node* user, struct room * myroom){
   myroom->users = createAndInsertU(myroom->users, user->socket, user->username);
 } 
 
-struct node * remove_user_from_room(struct room * myroom, char username[30]){
+void remove_user_from_room(struct room * myroom, char username[30]){
   //  returns null if user not there or error
-  struct node * firstuser=myroom->users;
-  struct node * user;
-  if (strcmp(firstuser->username, username) == 0){
-    myroom->users = NULL;
-    return firstuser;
-  }
-  else{ 
-    user = removeU(firstuser, username);
-    return user;
-  }
+  myroom->users = removeU(myroom->users, username);
 }
 
 void renameUserInRoom(struct room* myroom, char * oldusername, char * newusername){
