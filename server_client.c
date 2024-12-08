@@ -397,14 +397,6 @@ void *client_receive(void *ptr) {
         // send a message in the following format followed by the promt chat> to the appropriate receipients based on rooms, DMs
         // ::[userfrom]> <message>
 
-
-        // int indx = 0;
-        // while(arguments[indx]!=NULL){
-        //   strcat(buffer, arguments[indx]);
-        //   strcat(buffer, " ");
-        //   indx++;
-        // }
-
         sprintf(tmpbuf,"\n::%s> %s\nchat>", current_user->username, sbuffer);
         strcpy(sbuffer, tmpbuf);
 
@@ -419,6 +411,9 @@ void *client_receive(void *ptr) {
             }
             current_connection = current_connection->next;
          }
+
+         sprintf(buffer, "\nchat>");
+         send(current_user->socket , buffer , strlen(buffer) , 0 ); 
 
       }
 
