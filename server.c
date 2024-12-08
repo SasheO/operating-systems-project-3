@@ -1,3 +1,8 @@
+/*
+Authors: Mezisashe Ojuba (sole group member)
+Date: 8 Dec 2024.
+*/
+
 #include "server.h"
 
 int chat_serv_sock_fd; //server socket

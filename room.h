@@ -1,3 +1,8 @@
+/*
+Authors: Mezisashe Ojuba (sole group member)
+Date: 8 Dec 2024.
+*/
+
 #ifndef ROOM_H
 #define ROOM_H
 
