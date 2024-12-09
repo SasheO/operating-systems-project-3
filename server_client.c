@@ -118,7 +118,7 @@ void *client_receive(void *ptr) {
           send(client , buffer , strlen(buffer) , 0 ); // send back to client
         }
         else{
-        // create room with name given or newroom+socketnumber if user did not name room
+        // create room with name given
           pthread_mutex_lock(&rw_lock);
           strcpy(roomname, arguments[1]);
           if (roomExists(roomname)==1){
@@ -228,7 +228,7 @@ void *client_receive(void *ptr) {
           else{
             connections = createAndInsertConnection(connections, current_user->username, other_user->username, buffer);
             send(client , buffer , strlen(buffer) , 0 ); // send back to client
-            printConnections(connections);
+            // printConnections(connections); // test that connections work from server side
           }
           pthread_mutex_unlock(&rw_lock);
         } 
@@ -382,13 +382,14 @@ void *client_receive(void *ptr) {
           printf("connections removed\n");
         }
         
+        // deallocate current_user
         free(current_user);
         current_user = NULL;
 
         pthread_mutex_unlock(&rw_lock);
         close(client); // close socket descriptor
         printf("exited\n");
-        break;
+        break; // leave while loop
         
       }                         
       else { 
@@ -432,7 +433,7 @@ int get_next_room_ID(){
 }
 
 void freeAllResources(){
-  // inform users that server will be shut down soon
+  // inform users that server will be shut down soon in x seconds
   struct node * current_user = head;
   char buffer[MAXBUFF];
   sprintf(buffer, "NOTE: The server will be shut down in %d seconds. Please wrap up.\n\nchat>", GRACE_TIME_TO_SHUT_DOWN_SERVER_IN_SECS);
@@ -440,6 +441,8 @@ void freeAllResources(){
     send(current_user->socket , buffer , strlen(buffer) , 0 );
     current_user = current_user->next;
   }
+
+  // wait x seconds before shutting down
   sleep(GRACE_TIME_TO_SHUT_DOWN_SERVER_IN_SECS);
 
   pthread_mutex_lock(&rw_lock);
