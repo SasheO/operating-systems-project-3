@@ -1,5 +1,5 @@
 /*
-Authors: Mezisashe Ojuba (sole group member)
+Authors: Mezisashe Ojuba, Emily Jones
 Date: 8 Dec 2024.
 Version: 1.0
 Distribution: https://github.com/SasheO/operating-systems-project-3
