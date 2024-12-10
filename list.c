@@ -10,70 +10,35 @@ Distribution: https://github.com/SasheO/operating-systems-project-3
 #include <stdbool.h>
 #include <string.h>
 #include "list.h"
+#ifndef LIST_H
+#define LIST_H
+
+
+struct node {
+   char username[30];
+   int socket;
+   struct node *next;
+};
+
+/////////////////// USERLIST //////////////////////////
 
 // Create and insert a node at the first location
-struct node* createAndInsertU(struct node *head, int socket, char *username) {
-    struct node *new_node = (struct node *)malloc(sizeof(struct node));
-    strcpy(new_node->username, username);
-    new_node->socket = socket;
-    new_node->next = head;
-    return new_node;
-}
+struct node* createAndInsertU(struct node *head, int socket, char *username);
 
 // Insert an already existing link to the first location
-struct node* insertU(struct node *nodelist, struct node *link) {
-    link->next = nodelist;
-    return link;
-}
+struct node* insertU(struct node *nodelist, struct node *link);
 
 // Find a node with a given username
-struct node* findU(struct node *head, char* username) {
-    struct node *current = head;
-    while (current != NULL) {
-        if (strcmp(current->username, username) == 0) {
-            return current;
-        }
-        current = current->next;
-    }
-    return NULL;
-}
+struct node* findU(struct node *head, char* username);
 
 // Remove a link with a given username
-struct node* removeU(struct node *head, char* username) {
-    struct node *current = head;
-    struct node *previous = NULL;
-
-    while (current != NULL) {
-        if (strcmp(current->username, username) == 0) {
-            if (previous == NULL) {
-                head = current->next; // Node is at the head
-            } else {
-                previous->next = current->next;
-            }
-            free(current);
-            return head;
-        }
-        previous = current;
-        current = current->next;
-    }
-    return head;
-}
+struct node* removeU(struct node *head, char* username);
 
 // Rename a user
-void renameU(struct node *head, char* oldusername, char* newusername) {
-    struct node *user = findU(head, oldusername);
-    if (user != NULL) {
-        strcpy(user->username, newusername);
-    }
-}
+void renameU(struct node *head, char* oldusername, char* newusername);
 
 // Delete and deallocate every node in the list
-void deleteAllUs(struct node *head) {
-    struct node *current = head;
-    while (current != NULL) {
-        struct node *temp = current;
-        current = current->next;
-        free(temp);
-    }
-}
+void deleteAllUs(struct node *head);
+
+#endif // LIST_H
 
